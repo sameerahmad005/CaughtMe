@@ -1,4 +1,4 @@
-# CaughtMe
+# CaughtMe V0.1
 
 **CaughtMe** is a simple Bash tool for encrypting and decrypting files using AES-256 encryption. It provides an easy-to-use command-line interface to secure your files with password protection.
 
