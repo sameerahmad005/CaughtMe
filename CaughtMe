@@ -1,0 +1,131 @@
+#!/bin/bash
+
+ascii_design() {
+    clear
+    echo " " 
+    echo " ██████╗ █████╗ ██╗   ██╗ ██████╗ ██╗  ██╗████████╗    ███╗   ███╗███████╗    "
+    echo "██╔════╝██╔══██╗██║   ██║██╔════╝ ██║  ██║╚══██╔══╝    ████╗ ████║██╔════╝    "
+    echo "██║     ███████║██║   ██║██║  ███╗███████║   ██║       ██╔████╔██║█████╗      "
+    echo "██║     ██╔══██║██║   ██║██║   ██║██╔══██║   ██║       ██║╚██╔╝██║██╔══╝      "
+    echo "╚██████╗██║  ██║╚██████╔╝╚██████╔╝██║  ██║   ██║       ██║ ╚═╝ ██║███████╗    "
+    echo " ╚═════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝     ╚═╝╚══════╝    "
+    echo " BY SAMEER  GitHub : @sameerahmad005     "
+    echo " V0.1"
+}
+
+# Function to encrypt file
+encrypt_file() {
+    local input_file=$1
+    local output_file="${input_file%.txt}.tru"
+    local password=""
+    local confirm_password=""
+
+    read -p "Do you want to add password protection? (yes/no): " use_password
+    if [ "$use_password" == "yes" ]; then
+        while true; do
+            read -sp "Enter password for encryption: " password
+            echo
+            read -sp "Confirm password: " confirm_password
+            echo
+            if [ "$password" != "$confirm_password" ]; then
+                echo "Passwords do not match. Please try again."
+            else
+                break
+            fi
+        done
+    fi
+
+    if [ -z "$password" ]; then
+        openssl enc -aes-256-cbc -salt -in "$input_file" -out "$output_file"
+    else
+        openssl enc -aes-256-cbc -salt -in "$input_file" -out "$output_file" -k "$password"
+    fi
+
+    echo "File encrypted successfully to $output_file"
+}
+
+# Function to decrypt file
+decrypt_file() {
+    local input_file=$1
+    local output_file="${input_file%.tru}.txt"
+
+    if [[ ! "$input_file" =~ \.tru$ ]]; then
+        echo "Error: Please provide a .tru file for decryption."
+        return
+    fi
+
+    if ! openssl enc -d -aes-256-cbc -in "$input_file" -out "$output_file" -md sha256 2>/dev/null; then
+        echo "File decryption failed. Either the file is corrupted or password is incorrect."
+        echo "Press Enter to return to the main menu."
+        read -s
+        return
+    fi
+
+    echo "File decrypted successfully to $output_file"
+}
+
+# Function to display main menu
+main_menu() {
+    while true; do
+        ascii_design
+        echo "Choose an action: "
+        echo "1. Encrypt a file"
+        echo "2. Decrypt a file"
+        echo "3. Exit"
+        read -p "Enter 1, 2, or 3: " action_choice
+
+        case $action_choice in
+            1)
+                clear
+                ascii_design
+                echo "File type: .txt"
+                while true; do
+                    read -p "Enter the location of the .txt file or 'back' to return: " filename
+                    if [ "$filename" == "back" ]; then
+                        break
+                    fi
+                    filename=${filename//\'/}  # Remove any single quotes from the filename
+                    if [ ! -f "$filename" ]; then
+                        echo "File not found!"
+                    else
+                        encrypt_file "$filename"
+                        echo "Press Enter to return to the main menu."
+                        read -s
+                        break
+                    fi
+                done
+                ;;
+            2)
+                clear
+                ascii_design
+                while true; do
+                    read -p "Enter the location of the .tru file or 'back' to return: " filename
+                    if [ "$filename" == "back" ]; then
+                        break
+                    fi
+                    filename=${filename//\'/}  # Remove any single quotes from the filename
+                    if [[ ! "$filename" =~ \.tru$ ]]; then
+                        echo "Please provide a .tru file for decryption."
+                    elif [ ! -f "$filename" ]; then
+                        echo "File not found!"
+                    else
+                        decrypt_file "$filename"
+                        echo "Press Enter to return to the main menu."
+                        read -s
+                        break
+                    fi
+                done
+                ;;
+            3)
+                echo "Exiting..."
+                exit 0
+                ;;
+            *)
+                echo "Invalid choice! Please enter 1, 2, or 3."
+                ;;
+        esac
+    done
+}
+
+# Run the main menu
+main_menu
