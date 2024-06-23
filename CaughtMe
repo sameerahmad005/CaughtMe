@@ -10,7 +10,7 @@ ascii_design() {
     echo "╚██████╗██║  ██║╚██████╔╝╚██████╔╝██║  ██║   ██║       ██║ ╚═╝ ██║███████╗    "
     echo " ╚═════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝     ╚═╝╚══════╝    "
     echo " BY SAMEER  GitHub : @sameerahmad005     "
-    echo " V0.1"
+    echo " v0.1"
 }
 
 # Function to encrypt file
